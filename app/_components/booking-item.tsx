@@ -40,7 +40,7 @@ const BookingItem: React.FC<BookingItemProps> = ({
           {date.toLocaleDateString("pt-BR", { month: "long" })}
         </p>
         <p>{date.toLocaleDateString("pt-BR", { day: "2-digit" })}</p>
-        <p className="text-xs capitalize">
+        <p className="cap text-xs">
           {date.toLocaleTimeString("pt-BR", {
             hour: "2-digit",
             minute: "2-digit",
