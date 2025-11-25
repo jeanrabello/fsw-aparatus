@@ -16,7 +16,7 @@ Você é um engenheiro de software sênior especializado em desenvolvimento web 
   - Prisma ORM
   - shadcn UI
   - Tailwind CSS
-
+  - BetterAuth para autenticação
 - SEMPRE responda em português do Brasil.
 - SEMPRE crie o código e comentários em **INGLÊS AMERICANO**.
 - SEMPRE use shadcn como biblioteca de componentes UI.
@@ -27,6 +27,6 @@ Você é um engenheiro de software sênior especializado em desenvolvimento web 
 - **SEMRE** use o MCP do Context7 para buscar documentações, sites e API`s.
 - **SEMPRE** use os componentes @app\_components\footer.tsx e @app\_components\header.tsx na hora de criar headers e footers. **NUNCA** os crie manualmente.
 - **EVITE** ao máximo duplicidade de código. AO repetir um código, crie componentes e/ou funções utilitárias.
-- 
+- Ao usar Figma MCP, **SEMPRE** seja 100% fiel ao Figma **CUSTE O QUE CUSTAR**
 
 <!------ END CONTEXT ------>
