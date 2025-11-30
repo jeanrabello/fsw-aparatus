@@ -18,6 +18,9 @@ import { XIcon } from "lucide-react";
 import { TimeSlotPicker } from "./time-slot-picker";
 import { BookingConfirmation } from "./booking-confirmation";
 import { ptBR } from "date-fns/locale";
+import { useAction } from "next-safe-action/hooks";
+import { createBooking } from "../_actions/create-booking";
+import { toast } from "sonner";
 
 interface BookingSheetProps {
   service: BarbershopService;
@@ -33,14 +36,17 @@ export function BookingSheet({
   barbershop,
   children,
 }: BookingSheetProps) {
+  const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
-
+  const { executeAsync, isPending } = useAction(createBooking);
+  const isConfirmDisabled = !selectedDate || !selectedTime || isPending;
   const handleSheetOpenChange = (open: boolean) => {
     if (!open) {
       setSelectedDate(undefined);
       setSelectedTime(undefined);
     }
+    setSheetIsOpen(open);
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -48,20 +54,41 @@ export function BookingSheet({
     setSelectedTime(undefined);
   };
 
-  const handleConfirm = () => {
-    console.log("Booking:", {
-      service,
-      barbershop,
-      selectedDate,
-      selectedTime,
+  const handleConfirm = async () => {
+    if (!selectedDate || !selectedTime) {
+      return;
+    }
+
+    // Combine selected date and time into a single Date object
+    const timeSplitted = selectedTime?.split(":");
+    const hours = timeSplitted[0];
+    const minutes = timeSplitted[1];
+
+    const date = new Date(selectedDate);
+    date.setHours(Number(hours), Number(minutes), 0, 0);
+
+    const result = await executeAsync({
+      serviceId: service.id,
+      date,
     });
+
+    console.log("Create booking result:");
+
+    if (result.serverError || result.validationErrors) {
+      toast.error(result.validationErrors?._errors?.[0]);
+      return;
+    }
+
+    toast.success("Agendamento criado com sucesso!");
+    setSelectedDate(undefined);
+    setSelectedTime(undefined);
+    setSheetIsOpen(false);
   };
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   return (
-    <Sheet onOpenChange={handleSheetOpenChange}>
+    <Sheet open={sheetIsOpen} onOpenChange={handleSheetOpenChange}>
       <SheetTrigger asChild>{children}</SheetTrigger>
 
       <SheetContent
@@ -122,10 +149,10 @@ export function BookingSheet({
           <SheetFooter className="mt-0 shrink-0 px-5 pb-5">
             <Button
               className="w-full rounded-full"
-              disabled={!selectedDate || !selectedTime}
+              disabled={isConfirmDisabled}
               onClick={handleConfirm}
             >
-              Confirmar
+              {isPending ? "Confirmando..." : "Confirmar Reserva"}
             </Button>
           </SheetFooter>
         )}
