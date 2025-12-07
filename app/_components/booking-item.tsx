@@ -18,11 +18,16 @@ const BookingItem: React.FC<BookingItemProps> = ({
   status,
   date,
 }) => {
+  const badgeClassName =
+    status === "CONFIRMADO"
+      ? "bg-primary/10 text-primary border-transparent"
+      : "bg-muted-foreground/10 text-muted-foreground border-transparent";
+
   return (
     <Card className="flex w-full min-w-full flex-row items-center justify-between p-0">
       {/* LEFT */}
       <div className="flex flex-1 flex-col gap-4 p-4">
-        <Badge>Confirmado</Badge>
+        <Badge className={badgeClassName}>{status}</Badge>
         <div className="flex flex-col gap-2">
           <p className="font-bold">{serviceName}</p>
           <div className="5 flex items-center gap-2">
