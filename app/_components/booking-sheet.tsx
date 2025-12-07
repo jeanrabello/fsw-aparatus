@@ -21,6 +21,9 @@ import { ptBR } from "date-fns/locale";
 import { useAction } from "next-safe-action/hooks";
 import { createBooking } from "../_actions/create-booking";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { getDateAvailableTimeSlots } from "../_actions/get-date-available-time-slots";
+import { Spinner } from "./ui/spinner";
 
 interface BookingSheetProps {
   service: BarbershopService;
@@ -40,7 +43,18 @@ export function BookingSheet({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const { executeAsync, isPending } = useAction(createBooking);
+  const { data: availableTimeSlots, isPending: isPendingTimeSlots } = useQuery({
+    queryKey: ["date-available-time-slots", service.barbershopId, selectedDate],
+    queryFn: () =>
+      getDateAvailableTimeSlots({
+        barbershopId: service.barbershopId,
+        date: selectedDate!,
+      }),
+    enabled: Boolean(selectedDate),
+  });
+
   const isConfirmDisabled = !selectedDate || !selectedTime || isPending;
+
   const handleSheetOpenChange = (open: boolean) => {
     if (!open) {
       setSelectedDate(undefined);
@@ -121,11 +135,21 @@ export function BookingSheet({
             <>
               <Separator />
               <div className="flex flex-col gap-3">
-                <TimeSlotPicker
-                  selectedDate={selectedDate}
-                  selectedTime={selectedTime}
-                  onSelectTime={setSelectedTime}
-                />
+                {isPendingTimeSlots ? (
+                  <div className="flex w-full items-center justify-center gap-2 py-5">
+                    <Spinner />
+                    <p className="text-muted-foreground">
+                      Loading time slots...
+                    </p>
+                  </div>
+                ) : (
+                  <TimeSlotPicker
+                    availableTimeSlots={availableTimeSlots?.data}
+                    selectedDate={selectedDate}
+                    selectedTime={selectedTime}
+                    onSelectTime={setSelectedTime}
+                  />
+                )}
               </div>
             </>
           )}
