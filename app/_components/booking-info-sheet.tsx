@@ -16,7 +16,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
@@ -171,14 +182,35 @@ export function BookingInfoSheet({ booking, children }: BookingInfoSheetProps) {
               Voltar
             </Button>
           </SheetClose>
-          <Button
-            variant="destructive"
-            className="flex-1 rounded-full"
-            onClick={handleCancelBooking}
-            disabled={isPending || !isFuture || !!booking.cancelled}
-          >
-            {isPending ? "Cancelando..." : "Cancelar Reserva"}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className="flex-1 rounded-full"
+                disabled={isPending || !isFuture || !!booking.cancelled}
+              >
+                {isPending ? "Cancelando..." : "Cancelar Reserva"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Cancelar Reserva</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja cancelar este agendamento? Esta ação
+                  não pode ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Voltar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleCancelBooking}
+                  className={buttonVariants({ variant: "destructive" })}
+                >
+                  Confirmar Cancelamento
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </SheetFooter>
       </SheetContent>
     </Sheet>
