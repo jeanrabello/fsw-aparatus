@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { returnValidationErrors } from "next-safe-action";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const inputSchema = z.object({
@@ -62,6 +63,8 @@ export const createBooking = actionClient
         userId: session.user.id,
       },
     });
+
+    revalidatePath("/bookings");
 
     return booking;
   });

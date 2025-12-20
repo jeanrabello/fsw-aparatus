@@ -29,4 +29,17 @@ Você é um engenheiro de software sênior especializado em desenvolvimento web 
 - **EVITE** ao máximo duplicidade de código. AO repetir um código, crie componentes e/ou funções utilitárias.
 - Ao usar Figma MCP, **SEMPRE** seja 100% fiel ao Figma **CUSTE O QUE CUSTAR**
 
+## Server Actions
+
+- **SEMPRE** use a biblioteca "next-safe-action" para criar Server Actions
+- **SEMPRE** use o hook "useAction" da biblioteca "next-safe-action" para chamar uma Server Action 
+- **SEMPRE** use a Server Action @app\_actions\create-booking.ts como base para criar as suas
+- **SEMPRE** faça validações de autorização e autenticação em uma Server Action conforme o usuário
+- **SEMPRE** crie server actions em @app\_actions
+
+## shadcn/ui
+
+- Ao criar sheets, **NUNCA** crie manualmente o botão de fechar, o próprio Sheet do shadcn/ui já possui
+- Ao criar sheets, **NUNCA** crie o separator entre o header e o conteúdo, o próprio SheetHeader do shadcn/ui já possui um border-bottom
+
 <!------ END CONTEXT ------>

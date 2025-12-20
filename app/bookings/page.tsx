@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import BookingItem from "@/app/_components/booking-item";
+import { BookingInfoSheet } from "@/app/_components/booking-info-sheet";
+import { Separator } from "../_components/ui/separator";
 
 const BookingsPage = async () => {
   const session = await auth.api.getSession({
@@ -31,17 +33,29 @@ const BookingsPage = async () => {
   const now = new Date();
 
   const confirmedBookings = bookings.filter(
-    (booking) => booking.date > now && !booking.cancelled,
+    (booking) =>
+      booking.date > now &&
+      !booking.cancelled &&
+      booking.service &&
+      booking.barbershop,
   );
 
   const finishedBookings = bookings.filter(
-    (booking) => booking.date <= now || booking.cancelled,
+    (booking) =>
+      booking.date <= now &&
+      !booking.cancelled &&
+      booking.service &&
+      booking.barbershop,
+  );
+
+  const cancelledBookings = bookings.filter(
+    (booking) => booking.cancelled && booking.service && booking.barbershop,
   );
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-
+      <Separator />
       <div className="flex-1">
         <div className="px-5 pt-6">
           <h1 className="text-[20px] font-bold">Agendamentos</h1>
@@ -55,14 +69,15 @@ const BookingsPage = async () => {
             </p>
           ) : (
             confirmedBookings.map((booking) => (
-              <BookingItem
-                key={booking.id}
-                serviceName={booking.service.name}
-                barbershopName={booking.barbershop.name}
-                barbershopImageUrl={booking.barbershop.imageUrl}
-                status="CONFIRMADO"
-                date={booking.date}
-              />
+              <BookingInfoSheet key={booking.id} booking={booking}>
+                <BookingItem
+                  serviceName={booking.service.name}
+                  barbershopName={booking.barbershop.name}
+                  barbershopImageUrl={booking.barbershop.imageUrl}
+                  status="CONFIRMADO"
+                  date={booking.date}
+                />
+              </BookingInfoSheet>
             ))
           )}
         </div>
@@ -75,14 +90,36 @@ const BookingsPage = async () => {
             </p>
           ) : (
             finishedBookings.map((booking) => (
-              <BookingItem
-                key={booking.id}
-                serviceName={booking.service.name}
-                barbershopName={booking.barbershop.name}
-                barbershopImageUrl={booking.barbershop.imageUrl}
-                status="FINALIZADO"
-                date={booking.date}
-              />
+              <BookingInfoSheet key={booking.id} booking={booking}>
+                <BookingItem
+                  serviceName={booking.service.name}
+                  barbershopName={booking.barbershop.name}
+                  barbershopImageUrl={booking.barbershop.imageUrl}
+                  status="FINALIZADO"
+                  date={booking.date}
+                />
+              </BookingInfoSheet>
+            ))
+          )}
+        </div>
+
+        <div className="flex flex-col gap-3 px-5 pt-6">
+          <h2 className="text-xs font-bold uppercase">CANCELADOS</h2>
+          {cancelledBookings.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              Nenhum agendamento cancelado.
+            </p>
+          ) : (
+            cancelledBookings.map((booking) => (
+              <BookingInfoSheet key={booking.id} booking={booking}>
+                <BookingItem
+                  serviceName={booking.service.name}
+                  barbershopName={booking.barbershop.name}
+                  barbershopImageUrl={booking.barbershop.imageUrl}
+                  status="CANCELADO"
+                  date={booking.date}
+                />
+              </BookingInfoSheet>
             ))
           )}
         </div>

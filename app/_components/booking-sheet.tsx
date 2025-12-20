@@ -75,18 +75,16 @@ export function BookingSheet({
 
     // Combine selected date and time into a single Date object
     const timeSplitted = selectedTime?.split(":");
-    const hours = timeSplitted[0];
-    const minutes = timeSplitted[1];
+    const hours = Number(timeSplitted[0]);
+    const minutes = Number(timeSplitted[1]);
 
     const date = new Date(selectedDate);
-    date.setHours(Number(hours), Number(minutes), 0, 0);
+    date.setHours(hours, minutes, 0, 0);
 
     const result = await executeAsync({
       serviceId: service.id,
       date,
     });
-
-    console.log("Create booking result:");
 
     if (result.serverError || result.validationErrors) {
       toast.error(result.validationErrors?._errors?.[0]);

@@ -2,11 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Smartphone } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import { Separator } from "@/app/_components/ui/separator";
 import { ServiceItem } from "@/app/_components/service-item";
-import { PhoneCopyButton } from "@/app/_components/phone-copy-button";
+import { PhoneItem } from "@/app/_components/phone-item";
 
 const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
   const { id } = await props.params;
@@ -111,16 +111,7 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
         <div className="flex flex-col gap-3 px-5">
           <h2 className="text-xs font-bold uppercase">CONTATO</h2>
           {barbershop.phones.map((phone, index) => (
-            <div
-              key={index}
-              className="flex w-full items-center justify-between"
-            >
-              <div className="flex items-center gap-2.5">
-                <Smartphone className="size-6" />
-                <p className="text-sm">{phone}</p>
-              </div>
-              <PhoneCopyButton phone={phone} />
-            </div>
+            <PhoneItem key={index} phone={phone} />
           ))}
         </div>
 
