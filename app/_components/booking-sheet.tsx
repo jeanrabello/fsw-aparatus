@@ -44,11 +44,10 @@ export function BookingSheet({
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
-  const { executeAsync, isPending } = useAction(createBooking);
-  const {
-    executeAsync: executeCreateBookingCheckoutSession,
-    isPending: isCreatingBookingCheckoutSession,
-  } = useAction(createBookingCheckoutSession);
+  const { isPending } = useAction(createBooking);
+  const { executeAsync: executeCreateBookingCheckoutSession } = useAction(
+    createBookingCheckoutSession,
+  );
   const { data: availableTimeSlots, isPending: isPendingTimeSlots } = useQuery({
     queryKey: ["date-available-time-slots", service.barbershopId, selectedDate],
     queryFn: () =>
@@ -117,21 +116,6 @@ export function BookingSheet({
     await stripe.redirectToCheckout({
       sessionId: checkoutSessionResult.data.id,
     });
-
-    // const result = await executeAsync({
-    //   serviceId: service.id,
-    //   date,
-    // });
-
-    // if (result.serverError || result.validationErrors) {
-    //   toast.error(result.validationErrors?._errors?.[0]);
-    //   return;
-    // }
-
-    // toast.success("Agendamento criado com sucesso!");
-    // setSelectedDate(undefined);
-    // setSelectedTime(undefined);
-    // setSheetIsOpen(false);
   };
 
   const today = new Date();
