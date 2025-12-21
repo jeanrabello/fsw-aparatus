@@ -25,21 +25,24 @@ Você é um engenheiro de software sênior especializado em desenvolvimento web 
 - NUNCA use cores hardcoded do Tailwind, APENAS cores do tema que estão em app\globals.css
 - USE a página que está em app\page.tsx como referência para criar e organizar o código.
 - **SEMRE** use o MCP do Context7 para buscar documentações, sites e API`s.
-- **SEMPRE** use os componentes @app\_components\footer.tsx e @app\_components\header.tsx na hora de criar headers e footers. **NUNCA** os crie manualmente.
+- **SEMPRE** use os componentes @app_components\footer.tsx e @app_components\header.tsx na hora de criar headers e footers. **NUNCA** os crie manualmente.
 - **EVITE** ao máximo duplicidade de código. AO repetir um código, crie componentes e/ou funções utilitárias.
 - Ao usar Figma MCP, **SEMPRE** seja 100% fiel ao Figma **CUSTE O QUE CUSTAR**
 
 ## Server Actions
 
 - **SEMPRE** use a biblioteca "next-safe-action" para criar Server Actions
-- **SEMPRE** use o hook "useAction" da biblioteca "next-safe-action" para chamar uma Server Action 
-- **SEMPRE** use a Server Action @app\_actions\create-booking.ts como base para criar as suas
+- **SEMPRE** use o hook "useAction" da biblioteca "next-safe-action" para chamar uma Server Action
+- **SEMPRE** use a Server Action @app_actions\create-booking.ts como base para criar as suas
 - **SEMPRE** faça validações de autorização e autenticação em uma Server Action conforme o usuário
-- **SEMPRE** crie server actions em @app\_actions
+- **SEMPRE** crie server actions em @app_actions
 
 ## shadcn/ui
 
 - Ao criar sheets, **NUNCA** crie manualmente o botão de fechar, o próprio Sheet do shadcn/ui já possui
 - Ao criar sheets, **NUNCA** crie o separator entre o header e o conteúdo, o próprio SheetHeader do shadcn/ui já possui um border-bottom
 
+## Figma MCP
+
+- **NUNCA** faça downloads de ícones do Figma, **SEMPRE** use a biblioteca lucide-react para renderizar ícones
 <!------ END CONTEXT ------>

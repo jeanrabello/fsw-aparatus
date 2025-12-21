@@ -41,7 +41,9 @@ const SearchInput = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchValue.trim()) {
-      router.push(`/barbershops?search=${encodeURIComponent(searchValue.trim())}`);
+      router.push(
+        `/barbershops?search=${encodeURIComponent(searchValue.trim())}`,
+      );
     }
   };
 
@@ -50,7 +52,7 @@ const SearchInput = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
       <form onSubmit={handleSubmit} className="flex items-center gap-2">
         <Input
           type="text"
@@ -59,7 +61,12 @@ const SearchInput = () => {
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
-        <Button type="submit" variant="default" size="icon" className="rounded-full">
+        <Button
+          type="submit"
+          variant="default"
+          size="icon"
+          className="rounded-full"
+        >
           <SearchIcon />
         </Button>
       </form>
