@@ -24,6 +24,8 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { getDateAvailableTimeSlots } from "../_actions/get-date-available-time-slots";
 import { Spinner } from "./ui/spinner";
+import { createBookingCheckoutSession } from "../_actions/create-booking-checkout-session";
+import { loadStripe } from "@stripe/stripe-js";
 
 interface BookingSheetProps {
   service: BarbershopService;
@@ -43,6 +45,10 @@ export function BookingSheet({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const { executeAsync, isPending } = useAction(createBooking);
+  const {
+    executeAsync: executeCreateBookingCheckoutSession,
+    isPending: isCreatingBookingCheckoutSession,
+  } = useAction(createBookingCheckoutSession);
   const { data: availableTimeSlots, isPending: isPendingTimeSlots } = useQuery({
     queryKey: ["date-available-time-slots", service.barbershopId, selectedDate],
     queryFn: () =>
@@ -69,6 +75,11 @@ export function BookingSheet({
   };
 
   const handleConfirm = async () => {
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      toast.error("Erro ao criar a sessão de pagamento");
+      return;
+    }
+
     if (!selectedDate || !selectedTime) {
       return;
     }
@@ -81,20 +92,46 @@ export function BookingSheet({
     const date = new Date(selectedDate);
     date.setHours(hours, minutes, 0, 0);
 
-    const result = await executeAsync({
+    const checkoutSessionResult = await executeCreateBookingCheckoutSession({
       serviceId: service.id,
       date,
     });
 
-    if (result.serverError || result.validationErrors) {
-      toast.error(result.validationErrors?._errors?.[0]);
+    if (
+      checkoutSessionResult.serverError ||
+      checkoutSessionResult.validationErrors
+    ) {
+      toast.error(checkoutSessionResult.validationErrors?._errors?.[0]);
       return;
     }
 
-    toast.success("Agendamento criado com sucesso!");
-    setSelectedDate(undefined);
-    setSelectedTime(undefined);
-    setSheetIsOpen(false);
+    const stripe = await loadStripe(
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    );
+
+    if (!stripe || !checkoutSessionResult?.data?.id) {
+      toast.error("Erro ao inicializar o Stripe");
+      return;
+    }
+
+    await stripe.redirectToCheckout({
+      sessionId: checkoutSessionResult.data.id,
+    });
+
+    // const result = await executeAsync({
+    //   serviceId: service.id,
+    //   date,
+    // });
+
+    // if (result.serverError || result.validationErrors) {
+    //   toast.error(result.validationErrors?._errors?.[0]);
+    //   return;
+    // }
+
+    // toast.success("Agendamento criado com sucesso!");
+    // setSelectedDate(undefined);
+    // setSelectedTime(undefined);
+    // setSheetIsOpen(false);
   };
 
   const today = new Date();
