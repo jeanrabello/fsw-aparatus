@@ -14,7 +14,9 @@ export const POST = async (request: Request) => {
   }
 
   const text = await request.text();
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-07-30.basil",
+  });
   const event = stripe.webhooks.constructEvent(
     text,
     signature,
@@ -35,12 +37,32 @@ export const POST = async (request: Request) => {
       return NextResponse.error();
     }
 
+    let stripeChargeId: string | null = null;
+
+    if (session.payment_intent) {
+      const paymentIntentId =
+        typeof session.payment_intent === "string"
+          ? session.payment_intent
+          : session.payment_intent.id;
+
+      const paymentIntent =
+        await stripe.paymentIntents.retrieve(paymentIntentId);
+
+      if (
+        paymentIntent.latest_charge &&
+        typeof paymentIntent.latest_charge === "string"
+      ) {
+        stripeChargeId = paymentIntent.latest_charge;
+      }
+    }
+
     await prisma.booking.create({
       data: {
         userId,
         barbershopId,
         serviceId,
         date,
+        stripeChargeId,
       },
     });
   }

@@ -7,6 +7,7 @@ import { returnValidationErrors } from "next-safe-action";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import Stripe from "stripe";
 
 const inputSchema = z.object({
   bookingId: z.string().uuid(),
@@ -52,6 +53,21 @@ export const cancelBooking = actionClient
     if (booking.cancelled) {
       returnValidationErrors(inputSchema, {
         _errors: ["Este agendamento já foi cancelado"],
+      });
+    }
+
+    if (booking.stripeChargeId) {
+      if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error("STRIPE_SECRET_KEY is not set");
+      }
+
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: "2025-07-30.basil",
+      });
+
+      await stripe.refunds.create({
+        charge: booking.stripeChargeId,
+        reason: "requested_by_customer",
       });
     }
 
