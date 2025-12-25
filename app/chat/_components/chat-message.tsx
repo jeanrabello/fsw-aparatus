@@ -1,4 +1,5 @@
 import { UIMessage } from "ai";
+import { Streamdown } from "streamdown";
 import { AIAvatar } from "./ai-avatar";
 
 interface ChatMessageProps {
@@ -6,7 +7,10 @@ interface ChatMessageProps {
   isFirstMessage?: boolean;
 }
 
-export const ChatMessage = ({ message, isFirstMessage }: ChatMessageProps) => {
+export const ChatMessage = ({
+  message,
+  isFirstMessage,
+}: ChatMessageProps) => {
   const textContent = message.parts
     .filter((part) => part.type === "text")
     .map((part) => part.text)
@@ -15,12 +19,12 @@ export const ChatMessage = ({ message, isFirstMessage }: ChatMessageProps) => {
   // System message (first message)
   if (isFirstMessage && message.role === "assistant") {
     return (
-      <div className="flex flex-col items-start pt-[24px] px-[20px] w-full">
-        <div className="border border-border flex flex-col items-start p-[12px] rounded-[12px] w-full">
-          <div className="flex items-center justify-center w-full">
-            <p className="font-['Plus_Jakarta_Sans',sans-serif] font-normal leading-[1.4] text-[14px] text-muted-foreground text-center">
+      <div className="flex w-full flex-col items-start px-5 pt-6">
+        <div className="border-border flex w-full flex-col items-start rounded-[12px] border p-3">
+          <div className="flex w-full items-center justify-center">
+            <Streamdown className="text-muted-foreground text-center font-['Plus_Jakarta_Sans',sans-serif] text-[14px] leading-[1.4] font-normal">
               {textContent}
-            </p>
+            </Streamdown>
           </div>
         </div>
       </div>
@@ -30,13 +34,13 @@ export const ChatMessage = ({ message, isFirstMessage }: ChatMessageProps) => {
   // AI message
   if (message.role === "assistant") {
     return (
-      <div className="flex flex-col items-start pt-[24px] pl-[12px] pr-[56px] w-full">
-        <div className="flex gap-[8px] items-start w-full">
+      <div className="flex w-full flex-col items-start pt-6 pr-14 pl-3">
+        <div className="flex w-full items-start gap-2">
           <AIAvatar />
-          <div className="basis-0 grow min-h-px min-w-px">
-            <p className="font-['Plus_Jakarta_Sans',sans-serif] font-normal leading-[1.4] text-[14px] text-foreground whitespace-pre-wrap">
+          <div className="min-h-px min-w-px grow basis-0 overflow-hidden">
+            <Streamdown className="text-foreground font-['Plus_Jakarta_Sans',sans-serif] text-[14px] leading-[1.4] font-normal">
               {textContent}
-            </p>
+            </Streamdown>
           </div>
         </div>
       </div>
@@ -45,11 +49,11 @@ export const ChatMessage = ({ message, isFirstMessage }: ChatMessageProps) => {
 
   // User message
   return (
-    <div className="flex flex-col items-end pt-[24px] pl-[40px] pr-[20px] w-full">
-      <div className="bg-secondary flex h-[40px] items-center px-[16px] py-[12px] rounded-full">
-        <p className="font-['Plus_Jakarta_Sans',sans-serif] font-normal leading-[1.4] text-[14px] text-foreground">
+    <div className="flex w-full flex-col items-end pt-6 pr-5 pb-0 pl-10">
+      <div className="bg-secondary flex min-h-10 max-w-[80%] items-center overflow-hidden rounded-[20px] px-4 py-3">
+        <Streamdown className="text-foreground font-['Plus_Jakarta_Sans',sans-serif] text-[14px] leading-[1.4] font-normal">
           {textContent}
-        </p>
+        </Streamdown>
       </div>
     </div>
   );

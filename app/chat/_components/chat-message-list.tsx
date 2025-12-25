@@ -2,6 +2,7 @@
 
 import { UIMessage } from "ai";
 import { useEffect, useRef } from "react";
+import { Streamdown } from "streamdown";
 import { ChatMessage } from "./chat-message";
 import { AIAvatar } from "./ai-avatar";
 
@@ -17,29 +18,35 @@ export const ChatMessageList = ({ messages }: ChatMessageListProps) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col items-start w-full">
+    <div className="flex w-full flex-col items-start">
       {messages.length === 0 && (
         <>
           {/* System welcome message */}
-          <div className="flex flex-col items-start pt-[24px] px-[20px] w-full">
-            <div className="border border-border flex flex-col items-start p-[12px] rounded-[12px] w-full">
-              <div className="flex items-center justify-center w-full">
-                <p className="font-['Plus_Jakarta_Sans',sans-serif] font-normal leading-[1.4] text-[14px] text-muted-foreground text-center">
+          <div className="flex w-full flex-col items-start px-5 pt-6">
+            <div className="border-border flex w-full flex-col items-start rounded-[12px] border p-3">
+              <div className="flex w-full items-center justify-center">
+                <Streamdown className="text-muted-foreground text-center font-['Plus_Jakarta_Sans',sans-serif] text-[14px] leading-[1.4] font-normal">
                   Seu assistente de agendamentos está online.
-                </p>
+                </Streamdown>
               </div>
             </div>
           </div>
 
           {/* AI welcome message */}
-          <div className="flex flex-col items-start pt-[24px] pl-[12px] pr-[56px] w-full">
-            <div className="flex gap-[8px] items-start w-full">
+          <div className="flex w-full flex-col items-start pt-[24px] pr-[56px] pl-[12px]">
+            <div className="flex w-full items-start gap-[8px]">
               <AIAvatar />
-              <div className="basis-0 grow min-h-px min-w-px">
-                <p className="font-['Plus_Jakarta_Sans',sans-serif] font-normal leading-[1.4] text-[14px] text-foreground whitespace-pre-wrap">
-                  Olá! Sou o <span className="font-['Merriweather',serif] italic tracking-[-0.7px]">Aparatus.ai</span>, seu assistente pessoal.
+              <div className="min-h-px min-w-px grow basis-0">
+                <p className="text-foreground font-['Plus_Jakarta_Sans',sans-serif] text-[14px] leading-[1.4] font-normal whitespace-pre-wrap">
+                  Olá! Sou o{" "}
+                  <span className="font-['Merriweather',serif] tracking-[-0.7px] italic">
+                    Aparatus.ai
+                  </span>
+                  , seu assistente pessoal.
                   {"\n\n"}
-                  Estou aqui para te auxiliar a agendar seu corte ou barba, encontrar as barbearias disponíveis perto de você e responder às suas dúvidas.
+                  Estou aqui para te auxiliar a agendar seu corte ou barba,
+                  encontrar as barbearias disponíveis perto de você e responder
+                  às suas dúvidas.
                 </p>
               </div>
             </div>
