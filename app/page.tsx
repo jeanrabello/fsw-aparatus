@@ -1,9 +1,12 @@
 import Image from "next/image";
+import { headers } from "next/headers";
 import Header from "./_components/header";
 import SearchInput from "./_components/search-input";
 import banner from "../public/banner.png";
 import BookingItem from "./_components/booking-item";
+import { BookingInfoSheet } from "./_components/booking-info-sheet";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import BarbershopItem from "./_components/barbershop-item";
 import Footer from "./_components/footer";
 import {
@@ -14,6 +17,10 @@ import {
 } from "./_components/ui/page";
 
 const Home = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   const recommendedBarbershops = await prisma.barbershop.findMany({
     orderBy: {
       name: "asc",
@@ -26,6 +33,25 @@ const Home = async () => {
     },
   });
 
+  // Buscar agendamentos confirmados apenas se o usuário estiver logado
+  const now = new Date();
+  const confirmedBookings = session?.user
+    ? await prisma.booking.findMany({
+        where: {
+          userId: session.user.id,
+          date: { gt: now },
+          cancelled: false,
+        },
+        include: {
+          service: true,
+          barbershop: true,
+        },
+        orderBy: {
+          date: "asc",
+        },
+      })
+    : [];
+
   return (
     <main>
       <Header />
@@ -37,16 +63,24 @@ const Home = async () => {
           sizes="100vw"
           className="h-auto w-full"
         />
-        <PageSection>
-          <PageSectionTitle>Agendamentos</PageSectionTitle>
-          <BookingItem
-            serviceName="Corte de cabelo"
-            barbershopName="Barbearia XYZ"
-            barbershopImageUrl="https://utfs.io/f/5832df58-cfd7-4b3f-b102-42b7e150ced2-16r.png"
-            status="Agendado"
-            date={new Date()}
-          />
-        </PageSection>
+        {confirmedBookings.length > 0 && (
+          <PageSection>
+            <PageSectionTitle>Agendamentos</PageSectionTitle>
+            <PageSectionScroller>
+              {confirmedBookings.map((booking) => (
+                <BookingInfoSheet key={booking.id} booking={booking}>
+                  <BookingItem
+                    serviceName={booking.service.name}
+                    barbershopName={booking.barbershop.name}
+                    barbershopImageUrl={booking.barbershop.imageUrl}
+                    status="CONFIRMADO"
+                    date={booking.date}
+                  />
+                </BookingInfoSheet>
+              ))}
+            </PageSectionScroller>
+          </PageSection>
+        )}
 
         <PageSection>
           <PageSectionTitle>Recomendados</PageSectionTitle>

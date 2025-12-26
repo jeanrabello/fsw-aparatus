@@ -6,7 +6,6 @@ import {
   SearchIcon,
   Scissors,
   User,
-  Sparkles,
   Hand,
   Eye,
   Footprints,
@@ -26,7 +25,6 @@ interface QuickSearchOption {
 const QUICK_SEARCH_OPTIONS: QuickSearchOption[] = [
   { label: "Cabelo", value: "cabelo", icon: Scissors },
   { label: "Barba", value: "barba", icon: User },
-  { label: "Acabamento", value: "acabamento", icon: Sparkles },
   { label: "Massagem", value: "massagem", icon: Hand },
   { label: "Sobrancelha", value: "sobrancelha", icon: Eye },
   { label: "Pézinho", value: "pézinho", icon: Footprints },

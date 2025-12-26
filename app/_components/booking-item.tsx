@@ -24,7 +24,7 @@ const BookingItem: React.FC<BookingItemProps> = ({
       : "bg-muted-foreground/10 text-muted-foreground border-transparent";
 
   return (
-    <Card className="flex w-full min-w-full flex-row items-center justify-between p-0">
+    <Card className="flex min-w-[calc(100vw-40px)] flex-row items-center justify-between p-0">
       {/* LEFT */}
       <div className="flex flex-1 flex-col gap-4 p-4">
         <Badge className={badgeClassName}>{status}</Badge>

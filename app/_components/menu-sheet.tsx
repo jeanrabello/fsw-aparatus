@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
@@ -12,6 +14,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import { authClient } from "@/lib/auth-client";
 import {
   CalendarDaysIcon,
@@ -38,15 +50,16 @@ const MENU_ITEMS = [
 const SERVICE_CATEGORIES = [
   "Cabelo",
   "Barba",
-  "Acabamento",
   "Sombrancelha",
   "Massagem",
   "Hidratação",
 ];
 
 export function MenuSheet() {
+  const router = useRouter();
   const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   const handleLogin = async () => {
     await authClient.signIn.social({
@@ -59,7 +72,16 @@ export function MenuSheet() {
     await authClient.signOut();
   };
 
+  const handleBookingsClick = () => {
+    if (isLoggedIn) {
+      router.push("/bookings");
+    } else {
+      setShowLoginAlert(true);
+    }
+  };
+
   return (
+    <>
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon">
@@ -118,20 +140,33 @@ export function MenuSheet() {
           {/* Primary Navigation */}
           <div>
             <nav className="flex flex-col">
-              {MENU_ITEMS.map((item) => (
-                <Button
-                  key={item.href}
-                  asChild
-                  variant="ghost"
-                  size={null}
-                  className="justify-start gap-3 rounded-[82px] px-5 py-3"
-                >
-                  <Link href={item.href}>
+              {MENU_ITEMS.map((item) =>
+                item.href === "/bookings" ? (
+                  <Button
+                    key={item.href}
+                    variant="ghost"
+                    size={null}
+                    className="justify-start gap-3 rounded-[82px] px-5 py-3"
+                    onClick={handleBookingsClick}
+                  >
                     <item.icon size={16} />
                     <span className="text-sm font-medium">{item.label}</span>
-                  </Link>
-                </Button>
-              ))}
+                  </Button>
+                ) : (
+                  <Button
+                    key={item.href}
+                    asChild
+                    variant="ghost"
+                    size={null}
+                    className="justify-start gap-3 rounded-[82px] px-5 py-3"
+                  >
+                    <Link href={item.href}>
+                      <item.icon size={16} />
+                      <span className="text-sm font-medium">{item.label}</span>
+                    </Link>
+                  </Button>
+                ),
+              )}
             </nav>
           </div>
 
@@ -173,5 +208,23 @@ export function MenuSheet() {
         </div>
       </SheetContent>
     </Sheet>
+
+      <AlertDialog open={showLoginAlert} onOpenChange={setShowLoginAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Login Necessário</AlertDialogTitle>
+            <AlertDialogDescription>
+              Faça login para ver seus agendamentos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogin}>
+              Fazer Login
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
