@@ -3,6 +3,7 @@ import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getDateAvailableTimeSlots } from "@/app/_actions/get-date-available-time-slots";
+import { createBooking } from "@/app/_actions/create-booking";
 
 export const POST = async (request: Request) => {
   const { messages } = await request.json();
@@ -46,13 +47,22 @@ export const POST = async (request: Request) => {
         4. Use a ferramenta getAvailableTimeSlotsForBarbershop passando o barbershopId e a data
         5. Apresente os horários disponíveis (liste alguns horários, não todos - sugira 4-5 opções espaçadas)
 
+      Criação da reserva:
+        - Após o usuário confirmar explicitamente a escolha (ex: "confirmo", "pode agendar", "quero esse horário"), use a ferramenta createBooking
+        - Parâmetros necessários:
+          * serviceId: ID do serviço escolhido
+          * date: Data e horário no formato ISO (YYYY-MM-DDTHH:mm:ss) - exemplo: "2025-11-05T10:00:00"
+        - Se a criação for bem-sucedida (success: true), informe ao usuário que a reserva foi confirmada com sucesso
+        - Se houver erro (success: false), explique o erro ao usuário:
+          * Se o erro for "User must be logged in", informe que é necessário fazer login para criar uma reserva
+          * Para outros erros, informe que houve um problema e peça para tentar novamente
+
       Resumo final (quando o usuário escolher):
         - Nome da barbearia
         - Endereço
         - Serviço escolhido
         - Data e horário escolhido
         - Preço
-
 
       Importante:
         - NUNCA mostre informações técnicas ao usuário (barbershopId, serviceId, formatos ISO de data, etc.)
@@ -146,6 +156,31 @@ export const POST = async (request: Request) => {
           }
         },
       }),
+      createBooking: tool({
+        description: "Cria um agendamento para um serviço em uma data específica.",
+        inputSchema: z.object({
+          serviceId: z.string().describe("ID do serviço a ser agendado"),
+          date: z.string().describe("Data e horário em formato ISO para a qual deseja agendar o serviço."),
+        }),
+        execute: async ({ serviceId, date }) => {
+          const parsedDate = new Date(date);
+          const result = await createBooking({
+            serviceId,
+            date: parsedDate,
+          });
+
+          if(result.serverError || result.validationErrors) {
+            return {
+              error: result.validationErrors?._errors?.[0] || "Erro ao criar o agendamento."
+            }
+          }
+
+          return {
+            success: true,
+            message: "Agendamento criado com sucesso!",
+          }
+        }
+      })
     },
   });
 
