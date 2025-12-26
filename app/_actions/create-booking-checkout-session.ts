@@ -7,7 +7,9 @@ import { returnValidationErrors } from "next-safe-action";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { Stripe } from "stripe";
-import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+
+const TIMEZONE = "America/Sao_Paulo";
 
 const inputSchema = z.object({
   serviceId: z.uuid(),
@@ -65,8 +67,9 @@ export const createBookingCheckoutSession = actionClient
             currency: "brl",
             unit_amount: service.priceInCents,
             product_data: {
-              name: ` ${service.barbershop.name} - ${service.name} em ${format(
+              name: ` ${service.barbershop.name} - ${service.name} em ${formatInTimeZone(
                 date,
+                TIMEZONE,
                 "dd/MM/yyyy 'às' HH:mm",
               )}`,
               description: service.description,

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { ptBR } from "date-fns/locale";
+
+const TIMEZONE = "America/Sao_Paulo";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -76,12 +78,18 @@ export function BookingInfoSheet({ booking, children }: BookingInfoSheetProps) {
     },
   );
 
-  const formattedDate = format(new Date(booking.date), "d 'de' MMMM", {
-    locale: ptBR,
-  });
-  const formattedTime = format(new Date(booking.date), "HH:mm", {
-    locale: ptBR,
-  });
+  const formattedDate = formatInTimeZone(
+    new Date(booking.date),
+    TIMEZONE,
+    "d 'de' MMMM",
+    { locale: ptBR },
+  );
+  const formattedTime = formatInTimeZone(
+    new Date(booking.date),
+    TIMEZONE,
+    "HH:mm",
+    { locale: ptBR },
+  );
 
   const handleSheetOpenChange = (open: boolean) => {
     setSheetIsOpen(open);

@@ -1,6 +1,10 @@
+import { formatInTimeZone } from "date-fns-tz";
+import { ptBR } from "date-fns/locale";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
+
+const TIMEZONE = "America/Sao_Paulo";
 
 interface BookingItemProps {
   // Define any props needed for the BookingItem component
@@ -42,14 +46,11 @@ const BookingItem: React.FC<BookingItemProps> = ({
       {/* RIGHT */}
       <div className="border-left flex h-full flex-col items-center justify-center border-l p-4 py-3">
         <p className="text-xs capitalize">
-          {date.toLocaleDateString("pt-BR", { month: "long" })}
+          {formatInTimeZone(date, TIMEZONE, "MMMM", { locale: ptBR })}
         </p>
-        <p>{date.toLocaleDateString("pt-BR", { day: "2-digit" })}</p>
+        <p>{formatInTimeZone(date, TIMEZONE, "dd", { locale: ptBR })}</p>
         <p className="cap text-xs">
-          {date.toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {formatInTimeZone(date, TIMEZONE, "HH:mm", { locale: ptBR })}
         </p>
       </div>
     </Card>
